@@ -34,8 +34,6 @@ func (c App) Index() revel.Result {
 		redirectURL = redirectURL + "/"
 	}
 
-	log := c.Log.New("KOKI UI URL", redirectURL)
-	log.Debugf(redirectURL)
 	resp, err := http.Get(redirectURL + "index.html")
 	if err != nil {
 		return revel.PlaintextErrorResult{err}

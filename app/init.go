@@ -35,6 +35,12 @@ func init() {
 	// revel.OnAppStart(ExampleStartupScript)
 	// revel.OnAppStart(InitDB)
 	// revel.OnAppStart(FillCache)
+	revel.OnAppStart(InitDB)
+
+	// Suppress template loading
+	revel.OnAppStart(func() {
+		revel.TemplatePaths = []string{}
+	})
 }
 
 // HeaderFilter adds common security headers

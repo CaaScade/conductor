@@ -3,7 +3,7 @@
 # This file defines all application routes (Higher priority routes first)
 #
 
-module:testrunner
+# module:testrunner
 # module:jobs
 
 
@@ -11,6 +11,14 @@ GET     /                                       App.Index
 GET     /ui/*filepath                           S3.ServeUrlOrLocal
 GET     /ui                                     App.Index  
 GET     /*filepath                              S3.ServeUrlOrLocal
+
+#POST    /auth/register                          Auth.Register
+#POST    /auth/login                             Auth.Login
+#POST    /auth/logout                            Auth.Logout
+#GET     /users                                  User.List
+#GET     /user                                   User.Index
+#GET     /auth                                   Auth.Index
+
 
 # Ignore favicon requests
 GET     /favicon.ico                            404
