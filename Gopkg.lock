@@ -2,6 +2,22 @@
 
 
 [[projects]]
+  name = "github.com/boombuler/barcode"
+  packages = [
+    ".",
+    "qr",
+    "utils"
+  ]
+  revision = "3cfea5ab600ae37946be2b763b8ec2c1cf2d272d"
+  version = "v1.0.0"
+
+[[projects]]
+  name = "github.com/dgrijalva/jwt-go"
+  packages = ["."]
+  revision = "06ea1031745cb8b3dab3f6a236daf2b0aa468b7e"
+  version = "v3.2.0"
+
+[[projects]]
   name = "github.com/inconshreveable/log15"
   packages = ["term"]
   revision = "0decfc6c20d9ca0ad143b0e89dcaa20f810b4fb3"
@@ -39,6 +55,24 @@
   packages = ["."]
   revision = "25ecb14adfc7543176f7d85291ec7dba82c6f7e4"
   version = "v1.9.0"
+
+[[projects]]
+  name = "github.com/pquerna/otp"
+  packages = [
+    ".",
+    "hotp"
+  ]
+  revision = "b7b89250c468c06871d3837bee02e2d5c155ae19"
+  version = "v1.0.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/qor/auth"
+  packages = [
+    "auth_identity",
+    "claims"
+  ]
+  revision = "2bfb79d9618566322a4e5e9b6664eefb9f49f427"
 
 [[projects]]
   name = "github.com/revel/config"
@@ -83,6 +117,15 @@
 
 [[projects]]
   branch = "master"
+  name = "golang.org/x/crypto"
+  packages = [
+    "bcrypt",
+    "blowfish"
+  ]
+  revision = "de0752318171da717af4ce24d0a2e8626afaeb11"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/net"
   packages = ["websocket"]
   revision = "f9ce57c11b242f0f1599cf25c89d8cb02c45295a"
@@ -114,6 +157,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "28d1ccd3ebdb607bd0db82d671be245b28ed2df6a6803aea9542823881fa3879"
+  inputs-digest = "7c6ee0be2498e0003a162fec224f0d0ec294af735d4f00053fe260315932537c"
   solver-name = "gps-cdcl"
   solver-version = 1

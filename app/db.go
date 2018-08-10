@@ -3,6 +3,8 @@ package app
 import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"github.com/koki/conductor/app/models"
+	"github.com/qor/auth/auth_identity"
 	"github.com/revel/revel"
 )
 
@@ -16,13 +18,23 @@ func InitDB() {
 	}
 	DB = db
 
-	revel.AddInitEventHandler(dbShutdownHandler)
+	DB.AutoMigrate(&models.Global{})
+	DB.AutoMigrate(&auth_identity.AuthIdentity{})
+	DB.AutoMigrate(&models.User{})
+
+	var globalConfig models.Global
+	if revel.Config.BoolDefault(AUTHENTICATED_CONF, false) {
+		globalConfig.AuthenticationMode = int(models.AuthenticationModePassword)
+		revel.Config.SetOption(AUTHENTICATED_CONF, "true")
+	} else {
+		globalConfig.AuthenticationMode = int(models.AuthenticationModeUnsafe)
+	}
+	DB.Create(&globalConfig)
+
+	AddExitEventHandler(dbShutdownHandler)
 }
 
-func dbShutdownHandler(EVENT int, _ interface{}) int {
-	if EVENT == revel.ENGINE_SHUTDOWN {
-		revel.AppLog.Infof("closing database connection")
-		DB.Close()
-	}
-	return 0
+func dbShutdownHandler() {
+	revel.AppLog.Infof("closing database connection")
+	DB.Close()
 }

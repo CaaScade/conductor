@@ -1,6 +1,9 @@
 package app
 
 import (
+	"io/ioutil"
+
+	"github.com/dgrijalva/jwt-go"
 	"github.com/revel/revel"
 )
 
@@ -24,6 +27,7 @@ func init() {
 		revel.ValidationFilter,        // Restore kept validation errors and save new ones from cookie.
 		revel.I18nFilter,              // Resolve the requested language
 		HeaderFilter,                  // Add some security based headers
+		AuthFilter,                    // Authenticate and Authorize every request
 		revel.InterceptorFilter,       // Run interceptors around the action.
 		revel.CompressFilter,          // Compress the result.
 		revel.ActionInvoker,           // Invoke the action.
@@ -40,6 +44,28 @@ func init() {
 	// Suppress template loading
 	revel.OnAppStart(func() {
 		revel.TemplatePaths = []string{}
+	})
+
+	revel.OnAppStart(func() {
+		keyPath := revel.Config.StringDefault("koki.key.path", "conf/")
+		signBytes, err := ioutil.ReadFile(keyPath + "private-key.p8")
+		if err != nil {
+			revel.AppLog.Fatalf("private-key %s", err)
+		}
+		signKey, err = jwt.ParseRSAPrivateKeyFromPEM(signBytes)
+		if err != nil {
+			revel.AppLog.Fatalf("%s", err)
+		}
+
+		verifyBytes, err := ioutil.ReadFile(keyPath + "public-key.p8")
+		if err != nil {
+			revel.AppLog.Fatalf("public-key %s", err)
+		}
+
+		verifyKey, err = jwt.ParseRSAPublicKeyFromPEM(verifyBytes)
+		if err != nil {
+			revel.AppLog.Fatalf("%s", err)
+		}
 	})
 }
 
