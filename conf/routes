@@ -30,6 +30,18 @@ POST    /api/v1/role                            Role.CreateRole
 PUT     /api/v1/role/:role                      Role.UpdateRole
 DELETE  /api/v1/role/:role                      Role.DeleteRole
 GET     /api/v1/role/:role/users                Role.GetUsers
+GET     /api/v1/role/:role/permissions          Role.GetPerms
+POST    /api/v1/role/:role/permissions          Role.SetPerms
+PUT     /api/v1/role/:role/permissions          Role.AddPerms
+
+GET     /api/v1/permissions                     Permission.ListPermissions
+GET     /api/v1/permission/:perm                Permission.GetPermission
+POST    /api/v1/permission                      Permission.CreatePermission
+PUT     /api/v1/permission/:perm                Permission.UpdatePermission
+DELETE  /api/v1/permission/:perm                Permission.DeletePermission
+GET     /api/v1/permission/:perm/roles          Permission.GetRoles
+#POST    /api/v1/user/:username/roles            User.SetRoles
+#PUT     /api/v1/user/:username/role             User.AddRole
 
 GET     /*filepath                              S3.ServeUrlOrLocal
 
