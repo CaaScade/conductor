@@ -117,6 +117,13 @@ func AuthFilter(c *revel.Controller, fc []revel.Filter) {
 		user.Email = email
 		user.Counter = 1
 		DB.Create(&user)
+
+		role := models.Role{
+			Name: "user",
+		}
+		DB.Model(&role).Association("Users").Append([]*models.User{&user})
+		DB.Model(&user).Association("Roles").Append([]*models.Role{&role})
+
 		c.Response.SetStatus(http.StatusOK)
 		if redirect != "" {
 			c.Redirect(redirect)

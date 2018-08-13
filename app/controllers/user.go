@@ -70,10 +70,11 @@ func (u *User) DeleteUser(username string) revel.Result {
 func (u *User) GetRoles(username string) revel.Result {
 	user := models.User{Username: username}
 	if app.DB.Where(&user).First(&user).RecordNotFound() {
-		return revel.PlaintextErrorResult{Error: fmt.Errorf("unknown username")}
+		return RenderStatus{400, "unknown username"}
+		// return revel.PlaintextErrorResult{Error: fmt.Errorf("unknown username")}
 	}
-	roles := []*models.Role{}
-	//app.DB.Preload("Roles").First(&user)
-	app.DB.Model(&user).Related(&roles)
+	roles := new([]models.Role)
+	app.DB.Model(&user).Related(&roles, "Roles")
+	app.DB.Preload("Roles").First(&user)
 	return u.RenderJSON(roles)
 }

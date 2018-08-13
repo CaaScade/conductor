@@ -12,7 +12,7 @@ type User struct {
 	Email    string `gorm:"type:text`
 	Counter  uint64 `json:"-" gorm:"type:bigint`
 
-	Roles []Role `gorm:"many_to_many:user_roles;"`
+	Roles []Role `gorm:"many2many:user_roles;"`
 }
 
 /*
