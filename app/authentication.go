@@ -19,6 +19,8 @@ const AUTHORIZATION_HEADER = "Authorization"
 const AUTHENTICATED_CONF = "koki.app.authenticated"
 const USER_ID = "user_id"
 const OTP = "otp"
+const ROLES = "roles"
+const PERMS = "perms"
 const AUTH_LOGIN_PATH = "/auth/login"
 const AUTH_REGISTER_PATH = "/auth/register"
 const AUTH_LOGOUT_PATH = "/auth/logout"
@@ -60,6 +62,16 @@ func AuthFilter(c *revel.Controller, fc []revel.Filter) {
 			c.Response.GetWriter().Write([]byte("username or password incorrect"))
 			return
 		}
+		roles := new([]models.Role)
+		perms := new([]models.Permission)
+		/*
+			DB.Where(&user).Related(&roles)
+			newPerms := new([]models.Permission)
+			for _, r := range *roles {
+				DB.Model(&r).Related(&newPerms, "Permissions")
+				*perms = append(*perms, *newPerms...)
+			}
+		*/
 		secretUsername := &strings.Builder{}
 		encoder := base32.NewEncoder(base32.StdEncoding, secretUsername)
 		encoder.Write([]byte(username))
@@ -74,6 +86,8 @@ func AuthFilter(c *revel.Controller, fc []revel.Filter) {
 		token := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
 			USER_ID: username,
 			OTP:     otp,
+			ROLES:   roles,
+			PERMS:   perms,
 			"nbf":   time.Now().Unix(),
 			"exp":   time.Now().Add(time.Hour * 24).Unix(),
 		})
@@ -188,6 +202,8 @@ func AuthFilter(c *revel.Controller, fc []revel.Filter) {
 			return
 		}
 		c.Args[USER_ID] = username
+		c.Args[ROLES] = claims[ROLES]
+		c.Args[PERMS] = claims[PERMS]
 	} else {
 		c.Response.SetStatus(http.StatusUnauthorized)
 		c.Response.GetWriter().Write([]byte("invalid token claim"))

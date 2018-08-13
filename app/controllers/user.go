@@ -74,6 +74,6 @@ func (u *User) GetRoles(username string) revel.Result {
 	}
 	roles := []*models.Role{}
 	//app.DB.Preload("Roles").First(&user)
-	app.DB.Model(&user).Related(&roles)
+	app.DB.Model(&user).Related(&roles, "Roles")
 	return u.RenderJSON(roles)
 }

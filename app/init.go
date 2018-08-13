@@ -28,9 +28,10 @@ func init() {
 		revel.I18nFilter,              // Resolve the requested language
 		HeaderFilter,                  // Add some security based headers
 		AuthFilter,                    // Authenticate and Authorize every request
-		revel.InterceptorFilter,       // Run interceptors around the action.
-		revel.CompressFilter,          // Compress the result.
-		revel.ActionInvoker,           // Invoke the action.
+		AuthorizationFilter,
+		revel.InterceptorFilter, // Run interceptors around the action.
+		revel.CompressFilter,    // Compress the result.
+		revel.ActionInvoker,     // Invoke the action.
 	}
 
 	// Register startup functions with OnAppStart
