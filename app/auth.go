@@ -22,8 +22,9 @@ const OTP = "otp"
 const AUTH_LOGIN_PATH = "/auth/login"
 const AUTH_REGISTER_PATH = "/auth/register"
 const AUTH_LOGOUT_PATH = "/auth/logout"
+const UI_PATH = "/ui"
 
-var authCounter map[string]uint64
+var AuthCounter map[string]uint64
 
 var (
 	verifyKey *rsa.PublicKey
@@ -31,7 +32,7 @@ var (
 )
 
 func init() {
-	authCounter = map[string]uint64{}
+	AuthCounter = map[string]uint64{}
 }
 
 func AuthFilter(c *revel.Controller, fc []revel.Filter) {
@@ -40,6 +41,10 @@ func AuthFilter(c *revel.Controller, fc []revel.Filter) {
 		return
 	}
 	//appSecret := revel.Config.StringDefault("app.secret", "dummy_secret")
+	if strings.Index(strings.TrimRight(c.Request.GetPath(), "/"), "/ui") == 0 {
+		fc[0](c, fc[1:])
+		return
+	}
 	redirect := c.Params.Query.Get("redirect")
 	if strings.TrimRight(c.Request.GetPath(), "/") == AUTH_LOGIN_PATH {
 		var user models.User
@@ -80,7 +85,7 @@ func AuthFilter(c *revel.Controller, fc []revel.Filter) {
 			return
 		}
 		c.Response.Out.Header().Set(AUTHORIZATION_HEADER, fmt.Sprintf("Bearer %s", tokenString))
-		authCounter[username] = uint64(user.Counter)
+		AuthCounter[username] = uint64(user.Counter)
 		if redirect != "" {
 			c.Redirect(redirect)
 			return
@@ -123,7 +128,7 @@ func AuthFilter(c *revel.Controller, fc []revel.Filter) {
 	headers := strings.Split(headerData, " ")
 	if len(headers) != 2 {
 		c.Response.SetStatus(http.StatusUnauthorized)
-		c.Response.Out.Write([]byte(AUTHORIZATION_HEADER + " format invalid"))
+		c.Response.GetWriter().Write([]byte(AUTHORIZATION_HEADER + " format invalid"))
 		return
 	}
 	if headers[0] != "Bearer" {
@@ -169,15 +174,15 @@ func AuthFilter(c *revel.Controller, fc []revel.Filter) {
 		encoder := base32.NewEncoder(base32.StdEncoding, secretUsername)
 		encoder.Write([]byte(username))
 		defer encoder.Close()
-		if authCounter[username] == 0 {
+		if AuthCounter[username] == 0 {
 			var user models.User
 			if DB.Where(&models.User{Username: username}).First(&user).RecordNotFound() {
 				c.Response.SetStatus(http.StatusUnauthorized)
 				c.Response.GetWriter().Write([]byte("Username is invalid"))
 			}
-			authCounter[username] = user.Counter
+			AuthCounter[username] = user.Counter
 		}
-		if !hotp.Validate(otp, authCounter[username], secretUsername.String()) {
+		if !hotp.Validate(otp, AuthCounter[username], secretUsername.String()) {
 			c.Response.SetStatus(http.StatusUnauthorized)
 			c.Response.GetWriter().Write([]byte("OTP is invalid"))
 			return
@@ -196,7 +201,7 @@ func AuthFilter(c *revel.Controller, fc []revel.Filter) {
 			return
 		}
 		user.Counter = user.Counter + 1
-		authCounter[username] = authCounter[username] + 1
+		AuthCounter[username] = AuthCounter[username] + 1
 		DB.Model(&user).Update(user)
 		c.Response.SetStatus(http.StatusOK)
 		return

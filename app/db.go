@@ -6,6 +6,7 @@ import (
 	"github.com/koki/conductor/app/models"
 	"github.com/qor/auth/auth_identity"
 	"github.com/revel/revel"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var DB *gorm.DB
@@ -21,6 +22,8 @@ func InitDB() {
 	DB.AutoMigrate(&models.Global{})
 	DB.AutoMigrate(&auth_identity.AuthIdentity{})
 	DB.AutoMigrate(&models.User{})
+	DB.AutoMigrate(&models.Role{})
+	//DB.AutoMigrate(&models.Permission{})
 
 	var globalConfig models.Global
 	if revel.Config.BoolDefault(AUTHENTICATED_CONF, false) {
@@ -29,7 +32,48 @@ func InitDB() {
 	} else {
 		globalConfig.AuthenticationMode = int(models.AuthenticationModeUnsafe)
 	}
-	DB.Create(&globalConfig)
+	if DB.Where(&globalConfig).First(&globalConfig).RecordNotFound() {
+		DB.Create(&globalConfig)
+	}
+
+	_ = models.Permission{
+		Name:     "all",
+		Resource: "*",
+		Create:   true,
+		Read:     true,
+		Update:   true,
+		Delete:   true,
+	}
+	DB.LogMode(true)
+	role := models.Role{
+		Name: "admin",
+	}
+
+	user := models.User{
+		Username: "admin",
+		Password: "",
+	}
+	//if DB.Where(&permission).First(&permission).RecordNotFound() {
+	//	DB.Create(&permission)
+	//}
+
+	if DB.Where(&role).First(&role).RecordNotFound() {
+		DB.Create(&role)
+	}
+
+	if DB.Where(&user).First(&user).RecordNotFound() {
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte("admin"), bcrypt.DefaultCost)
+		if err != nil {
+			revel.AppLog.Fatalf("could not create admin user: %+v", err)
+		}
+		user.Password = string(hashedPassword)
+		DB.Create(&user)
+		//DB.Model(&user).Related([]models.Role{role}, "Roles")
+		//revel.AppLog.Debugf("%+v", DB.Model(&user).Association("Roles").Append([]*models.Role{&role}).Error)
+	}
+	//DB.Preload("Users").First(&role)
+	DB.Model(&role).Association("Users").Append([]*models.User{&user})
+	DB.Model(&user).Association("Roles").Append([]*models.Role{&role})
 
 	AddExitEventHandler(dbShutdownHandler)
 }

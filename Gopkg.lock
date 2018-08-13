@@ -29,8 +29,7 @@
     ".",
     "dialects/sqlite"
   ]
-  revision = "6ed508ec6a4ecb3531899a69cbc746ccf65a4166"
-  version = "v1.9.1"
+  revision = "409121d9e394922787885b001d148a05e3a42b6c"
 
 [[projects]]
   branch = "master"
@@ -157,6 +156,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "7c6ee0be2498e0003a162fec224f0d0ec294af735d4f00053fe260315932537c"
+  inputs-digest = "9bddef37dbab62acabc39131f5265ca443af1c54c6ddaf89cc5fcbc7cedd37e1"
   solver-name = "gps-cdcl"
   solver-version = 1

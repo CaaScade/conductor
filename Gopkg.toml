@@ -27,7 +27,7 @@
 
 [[constraint]]
   name = "github.com/jinzhu/gorm"
-  version = "1.9.1"
+  revision = "409121d9e394922787885b001d148a05e3a42b6c"
 
 [[constraint]]
   name = "github.com/revel/modules"
