@@ -54,3 +54,13 @@ func (r *Role) DeleteRole(role string) revel.Result {
 	app.DB.Model(&models.Role{}).Delete(&roleType)
 	return RenderStatus{200, ""}
 }
+
+func (r *Role) GetUsers(role string) revel.Result {
+	roleType := models.Role{Name: role}
+	if app.DB.Where(&roleType).First(&roleType).RecordNotFound() {
+		return revel.PlaintextErrorResult{Error: fmt.Errorf("unknown role")}
+	}
+	users := new([]models.User)
+	app.DB.Model(&roleType).Related(&users, "Users")
+	return r.RenderJSON(users)
+}

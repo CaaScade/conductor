@@ -29,7 +29,7 @@ GET     /api/v1/role/:role                      Role.GetRole
 POST    /api/v1/role                            Role.CreateRole
 PUT     /api/v1/role/:role                      Role.UpdateRole
 DELETE  /api/v1/role/:role                      Role.DeleteRole
-#GET     /api/v1/role/:role/users                Role.GetUsers
+GET     /api/v1/role/:role/users                Role.GetUsers
 
 GET     /*filepath                              S3.ServeUrlOrLocal
 
