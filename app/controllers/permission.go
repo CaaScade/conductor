@@ -21,7 +21,7 @@ func (p *Permission) ListPermissions() revel.Result {
 func (p *Permission) CreatePermission() revel.Result {
 	permType := models.Permission{}
 	p.Params.BindJSON(&permType)
-	if !app.DB.Where(&permType).Find(&permType).RecordNotFound() {
+	if !app.DB.Where("name = ?", permType.Name).First(&permType).RecordNotFound() {
 		return revel.PlaintextErrorResult{Error: fmt.Errorf("perm already exists")}
 	}
 	app.DB.Create(&permType)
@@ -30,7 +30,7 @@ func (p *Permission) CreatePermission() revel.Result {
 
 func (p *Permission) GetPermission(perm string) revel.Result {
 	permType := models.Permission{Name: perm}
-	if app.DB.Where(&permType).Find(&permType).RecordNotFound() {
+	if app.DB.Where(&permType).First(&permType).RecordNotFound() {
 		return revel.PlaintextErrorResult{Error: fmt.Errorf("unknown perm")}
 	}
 	return p.RenderJSON(permType)
@@ -53,4 +53,39 @@ func (p *Permission) DeletePermission(perm string) revel.Result {
 	}
 	app.DB.Model(&models.Permission{}).Delete(&permType)
 	return RenderStatus{200, ""}
+}
+
+func (p *Permission) GetRoles(perm string) revel.Result {
+	permType := models.Permission{Name: perm}
+	if app.DB.Where(&permType).First(&permType).RecordNotFound() {
+		return revel.PlaintextErrorResult{Error: fmt.Errorf("unknown perm")}
+	}
+	roles := new([]models.Role)
+	app.DB.Model(&permType).Related(&roles, "Roles")
+	return p.RenderJSON(roles)
+}
+
+func (p *Permission) SetRoles(perm string) revel.Result {
+	permType := models.Permission{}
+	if app.DB.Where("name = ?", perm).First(&permType).RecordNotFound() {
+		return revel.PlaintextErrorResult{Error: fmt.Errorf("unknown role")}
+	}
+	roles := new([]models.Role)
+	p.Params.BindJSON(&roles)
+	app.DB.Model(&permType).Association("Roles").Clear()
+	app.DB.Model(&permType).Association("Roles").Append(roles)
+	app.DB.Model(&permType).Related(&roles, "Roles")
+	return p.RenderJSON(roles)
+}
+
+func (p *Permission) AddRoles(perm string) revel.Result {
+	permType := models.Permission{}
+	if app.DB.Where("name = ?", perm).First(&permType).RecordNotFound() {
+		return revel.PlaintextErrorResult{Error: fmt.Errorf("unknown role")}
+	}
+	roles := new([]models.Role)
+	p.Params.BindJSON(&roles)
+	app.DB.Model(&permType).Association("Roles").Append(roles)
+	app.DB.Model(&permType).Related(&roles, "Roles")
+	return p.RenderJSON(roles)
 }

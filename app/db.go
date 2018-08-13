@@ -23,7 +23,7 @@ func InitDB() {
 	DB.AutoMigrate(&auth_identity.AuthIdentity{})
 	DB.AutoMigrate(&models.User{})
 	DB.AutoMigrate(&models.Role{})
-	//DB.AutoMigrate(&models.Permission{})
+	DB.AutoMigrate(&models.Permission{})
 
 	var globalConfig models.Global
 	if revel.Config.BoolDefault(AUTHENTICATED_CONF, false) {
@@ -36,7 +36,7 @@ func InitDB() {
 		DB.Create(&globalConfig)
 	}
 
-	_ = models.Permission{
+	permission := models.Permission{
 		Name:     "all",
 		Resource: "*",
 		Create:   true,
@@ -52,10 +52,11 @@ func InitDB() {
 	user := models.User{
 		Username: "admin",
 		Password: "",
+		Counter:  1,
 	}
-	//if DB.Where(&permission).First(&permission).RecordNotFound() {
-	//	DB.Create(&permission)
-	//}
+	if DB.Where(&permission).First(&permission).RecordNotFound() {
+		DB.Create(&permission)
+	}
 
 	if DB.Where(&role).First(&role).RecordNotFound() {
 		DB.Create(&role)
@@ -68,10 +69,9 @@ func InitDB() {
 		}
 		user.Password = string(hashedPassword)
 		DB.Create(&user)
-		//DB.Model(&user).Related([]models.Role{role}, "Roles")
-		//revel.AppLog.Debugf("%+v", DB.Model(&user).Association("Roles").Append([]*models.Role{&role}).Error)
 	}
-	//DB.Preload("Users").First(&role)
+	DB.Model(&permission).Association("Roles").Append([]*models.Role{&role})
+	DB.Model(&role).Association("Permissions").Append([]*models.Permission{&permission})
 	DB.Model(&role).Association("Users").Append([]*models.User{&user})
 	DB.Model(&user).Association("Roles").Append([]*models.Role{&role})
 

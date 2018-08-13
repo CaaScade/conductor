@@ -64,3 +64,39 @@ func (r *Role) GetUsers(role string) revel.Result {
 	app.DB.Model(&roleType).Related(&users, "Users")
 	return r.RenderJSON(users)
 }
+
+func (r *Role) GetPerms(role string) revel.Result {
+	roleType := models.Role{}
+	if app.DB.Where("name = ?", role).First(&roleType).RecordNotFound() {
+		return revel.PlaintextErrorResult{Error: fmt.Errorf("unknown role")}
+	}
+	perms := new([]models.Permission)
+	app.DB.Model(&roleType).Related(&perms, "Permissions")
+	return r.RenderJSON(perms)
+}
+
+func (r *Role) SetPerms(role string) revel.Result {
+	roleType := models.Role{}
+	if app.DB.Where("name = ?", role).First(&roleType).RecordNotFound() {
+		return revel.PlaintextErrorResult{Error: fmt.Errorf("unknown role")}
+	}
+	perms := new([]models.Permission)
+	r.Params.BindJSON(&perms)
+	revel.AppLog.Debugf("%+v", perms)
+	app.DB.Model(&roleType).Association("Permissions").Clear()
+	app.DB.Model(&roleType).Association("Permissions").Append(perms)
+	app.DB.Model(&roleType).Related(&perms, "Permissions")
+	return r.RenderJSON(perms)
+}
+
+func (r *Role) AddPerms(role string) revel.Result {
+	roleType := models.Role{}
+	if app.DB.Where("name = ?", role).First(&roleType).RecordNotFound() {
+		return revel.PlaintextErrorResult{Error: fmt.Errorf("unknown role")}
+	}
+	perms := new([]models.Permission)
+	r.Params.BindJSON(&perms)
+	app.DB.Model(&roleType).Association("Permissions").Append(perms)
+	app.DB.Model(&roleType).Related(&perms, "Permissions")
+	return r.RenderJSON(perms)
+}
