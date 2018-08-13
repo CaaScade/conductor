@@ -40,8 +40,8 @@ POST    /api/v1/permission                      Permission.CreatePermission
 PUT     /api/v1/permission/:perm                Permission.UpdatePermission
 DELETE  /api/v1/permission/:perm                Permission.DeletePermission
 GET     /api/v1/permission/:perm/roles          Permission.GetRoles
-#POST    /api/v1/user/:username/roles            User.SetRoles
-#PUT     /api/v1/user/:username/role             User.AddRole
+POST    /api/v1/permission/:perm/roles          Permission.SetRoles
+PUT     /api/v1/permission/:perm/roles          Permission.AddRoles
 
 GET     /*filepath                              S3.ServeUrlOrLocal
 
