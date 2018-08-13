@@ -72,7 +72,7 @@ func (u *User) GetRoles(username string) revel.Result {
 	if app.DB.Where(&user).First(&user).RecordNotFound() {
 		return revel.PlaintextErrorResult{Error: fmt.Errorf("unknown username")}
 	}
-	roles := []*models.Role{}
+	roles := new([]models.Role)
 	//app.DB.Preload("Roles").First(&user)
 	app.DB.Model(&user).Related(&roles, "Roles")
 	return u.RenderJSON(roles)
