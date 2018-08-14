@@ -73,7 +73,7 @@ func InitDB() {
 	DB.Model(&permission).Association("Roles").Append([]*models.Role{&role})
 	DB.Model(&role).Association("Permissions").Append([]*models.Permission{&permission})
 	DB.Model(&role).Association("Users").Append([]*models.User{&user})
-	DB.Model(&user).Association("Roles").Append([]*models.Role{&role})
+	//	DB.Model(&user).Association("Roles").Append([]*models.Role{&role})
 
 	AddExitEventHandler(dbShutdownHandler)
 }

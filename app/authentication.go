@@ -64,14 +64,12 @@ func AuthFilter(c *revel.Controller, fc []revel.Filter) {
 		}
 		roles := new([]models.Role)
 		perms := new([]models.Permission)
-		/*
-			DB.Where(&user).Related(&roles)
-			newPerms := new([]models.Permission)
-			for _, r := range *roles {
-				DB.Model(&r).Related(&newPerms, "Permissions")
-				*perms = append(*perms, *newPerms...)
-			}
-		*/
+		DB.Model(&user).Related(roles, "Roles")
+		newPerms := new([]models.Permission)
+		for _, r := range *roles {
+			DB.Model(&r).Related(newPerms, "Permissions")
+			*perms = append(*perms, *newPerms...)
+		}
 		secretUsername := &strings.Builder{}
 		encoder := base32.NewEncoder(base32.StdEncoding, secretUsername)
 		encoder.Write([]byte(username))
@@ -209,6 +207,7 @@ func AuthFilter(c *revel.Controller, fc []revel.Filter) {
 			return
 		}
 		c.Args[USER_ID] = username
+		revel.AppLog.Debugf("id=%s, roles=%+v perms=%+v", username, claims[ROLES], claims[PERMS])
 		c.Args[ROLES] = claims[ROLES]
 		c.Args[PERMS] = claims[PERMS]
 	} else {

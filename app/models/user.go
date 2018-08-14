@@ -7,10 +7,10 @@ import (
 type User struct {
 	gorm.Model
 
-	Username string `gorm:"type:text`
-	Password string `json:"-" gorm:"type:text`
-	Email    string `gorm:"type:text`
-	Counter  uint64 `json:"-" gorm:"type:bigint`
+	Username string `gorm:"index"`
+	Password string `json:"-"`
+	Email    string
+	Counter  uint64 `json:"-"`
 
 	Roles []Role `gorm:"many2many:user_roles;"`
 }
