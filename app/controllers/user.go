@@ -70,10 +70,35 @@ func (u *User) DeleteUser(username string) revel.Result {
 func (u *User) GetRoles(username string) revel.Result {
 	user := models.User{Username: username}
 	if app.DB.Where(&user).First(&user).RecordNotFound() {
-		return revel.PlaintextErrorResult{Error: fmt.Errorf("unknown username")}
+		return RenderStatus{400, "unknown username"}
 	}
 	roles := new([]models.Role)
-	//app.DB.Preload("Roles").First(&user)
+	app.DB.Model(&user).Related(&roles, "Roles")
+	app.DB.Preload("Roles").First(&user)
+	return u.RenderJSON(roles)
+}
+
+func (u *User) SetRoles(username string) revel.Result {
+	user := models.User{Username: username}
+	if app.DB.Where(&user).First(&user).RecordNotFound() {
+		return RenderStatus{400, "user not found"}
+	}
+	roles := new([]models.Role)
+	u.Params.BindJSON(&roles)
+	app.DB.Model(&user).Association("Roles").Clear()
+	app.DB.Model(&user).Association("Roles").Append(roles)
 	app.DB.Model(&user).Related(&roles, "Roles")
 	return u.RenderJSON(roles)
 }
+
+func (u *User) AddRole(username string) revel.Result {
+	user := models.User{Username: username}
+	if app.DB.Where(&user).First(&user).RecordNotFound() {
+		return RenderStatus{400, "user not found"}
+	}
+	roles := new([]models.Role)
+	u.Params.BindJSON(&roles)
+	app.DB.Model(&user).Association("Roles").Append(roles)
+	app.DB.Model(&user).Related(&roles, "Roles")
+	return u.RenderJSON(roles)
+	}

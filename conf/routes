@@ -21,8 +21,8 @@ GET     /api/v1/user/:username                  User.GetUser
 PUT     /api/v1/user/:username                  User.UpdateUser
 DELETE  /api/v1/user/:username                  User.DeleteUser
 GET     /api/v1/user/:username/roles            User.GetRoles
-#POST    /api/v1/user/:username/roles            User.SetRoles
-#PUT     /api/v1/user/:username/role             User.AddRole
+POST    /api/v1/user/:username/roles            User.SetRoles
+PUT     /api/v1/user/:username/role             User.AddRole
 
 GET     /api/v1/roles                           Role.ListRoles 
 GET     /api/v1/role/:role                      Role.GetRole
@@ -30,6 +30,9 @@ POST    /api/v1/role                            Role.CreateRole
 PUT     /api/v1/role/:role                      Role.UpdateRole
 DELETE  /api/v1/role/:role                      Role.DeleteRole
 GET     /api/v1/role/:role/users                Role.GetUsers
+PUT     /api/v1/role/:role/users                Role.AddUsers
+POST    /api/v1/role/:role/users                Role.SetUsers
+
 GET     /api/v1/role/:role/permissions          Role.GetPerms
 POST    /api/v1/role/:role/permissions          Role.SetPerms
 PUT     /api/v1/role/:role/permissions          Role.AddPerms

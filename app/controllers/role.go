@@ -100,3 +100,30 @@ func (r *Role) AddPerms(role string) revel.Result {
 	app.DB.Model(&roleType).Related(&perms, "Permissions")
 	return r.RenderJSON(perms)
 }
+
+func (r *Role) AddUsers(role string) revel.Result {
+	roleType := models.Role{}
+
+	if app.DB.Where("name = ?", role).First(&roleType).RecordNotFound() {
+		return revel.PlaintextErrorResult{Error: fmt.Errorf("unknown role")}
+	}
+
+	users := new([]models.User)
+	r.Params.BindJSON(&users)
+	app.DB.Model(&roleType).Association("Users").Append(users)
+	app.DB.Model(&roleType).Related(&users, "Users")
+	return r.RenderJSON(users)
+}
+
+func (r *Role) SetUsers(role string) revel.Result {
+	roleType := models.Role{}
+	if app.DB.Where("name = ?", role).First(&roleType).RecordNotFound() {
+		return revel.PlaintextErrorResult{Error: fmt.Errorf("unknown role")}
+	}
+	users := new([]models.User)
+	r.Params.BindJSON(&users)
+	app.DB.Model(&roleType).Association("Users").Clear()
+	app.DB.Model(&roleType).Association("Users").Append(users)
+	app.DB.Model(&roleType).Related(&users, "Users")
+	return r.RenderJSON(users)
+}
