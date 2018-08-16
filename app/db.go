@@ -48,9 +48,18 @@ func InitDB() {
 	role := models.Role{
 		Name: "admin",
 	}
+	svcRole := models.Role{
+		Name: "service",
+	}
 
 	user := models.User{
 		Username: "admin",
+		Password: "",
+		Counter:  1,
+	}
+
+	svcUser := models.User{
+		Username: "service",
 		Password: "",
 		Counter:  1,
 	}
@@ -62,6 +71,10 @@ func InitDB() {
 		DB.Create(&role)
 	}
 
+	if DB.Where(&svcRole).First(&svcRole).RecordNotFound() {
+		DB.Create(&svcRole)
+	}
+
 	if DB.Where(&user).First(&user).RecordNotFound() {
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte("admin"), bcrypt.DefaultCost)
 		if err != nil {
@@ -70,9 +83,19 @@ func InitDB() {
 		user.Password = string(hashedPassword)
 		DB.Create(&user)
 	}
+	if DB.Where(&svcUser).First(&svcUser).RecordNotFound() {
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte("service"), bcrypt.DefaultCost)
+		if err != nil {
+			revel.AppLog.Fatalf("could not create service user: %+v", err)
+		}
+		svcUser.Password = string(hashedPassword)
+		DB.Create(&svcUser)
+	}
 	DB.Model(&permission).Association("Roles").Append([]*models.Role{&role})
 	DB.Model(&role).Association("Permissions").Append([]*models.Permission{&permission})
+	DB.Model(&svcRole).Association("Permissions").Append([]*models.Permission{&permission})
 	DB.Model(&role).Association("Users").Append([]*models.User{&user})
+	DB.Model(&svcRole).Association("Users").Append([]*models.User{&svcUser})
 	//	DB.Model(&user).Association("Roles").Append([]*models.Role{&role})
 
 	AddExitEventHandler(dbShutdownHandler)

@@ -1,0 +1,11 @@
+[
+  {
+    "targets": [
+      "localhost:9000"
+    ],
+    "labels": {
+      "job": "conductor",
+      "__metrics_path": "/metrics"
+    }
+  }
+]
