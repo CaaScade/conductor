@@ -2,8 +2,10 @@ package app
 
 import (
 	"io/ioutil"
+	"net/http"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/revel/revel"
 )
 
@@ -67,6 +69,21 @@ func init() {
 		if err != nil {
 			revel.AppLog.Fatalf("%s", err)
 		}
+	})
+
+	revel.OnAppStart(func() {
+		revel.AddInitEventHandler(func(event int, _ interface{}) (r int) {
+			if event == revel.ENGINE_STARTED {
+				var (
+					serveMux     = http.NewServeMux()
+					revelHandler = revel.CurrentEngine.(*revel.GoHttpServer).Server.Handler
+				)
+				serveMux.Handle("/", revelHandler)
+				serveMux.Handle("/metrics", promhttp.Handler())
+				revel.CurrentEngine.(*revel.GoHttpServer).Server.Handler = serveMux
+			}
+			return
+		})
 	})
 }
 
