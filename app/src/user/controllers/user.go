@@ -1,12 +1,14 @@
-package controllers
+package user
 
 import (
 	"fmt"
 
 	"github.com/koki/conductor/app"
-	"github.com/koki/conductor/app/models"
+	user_model "github.com/koki/conductor/app/src/user/models"
+	role_model "github.com/koki/conductor/app/src/roles/models"
 	"github.com/revel/revel"
 	"golang.org/x/crypto/bcrypt"
+	"github.com/koki/conductor/app/src/util"
 )
 
 type User struct {
@@ -24,21 +26,21 @@ func (r RenderStatus) Apply(req *revel.Request, resp *revel.Response) {
 }
 
 func (u *User) ListUsers() revel.Result {
-	users := []models.User{}
+	users := []user_model.User{}
 	app.DB.Find(&users)
 	return u.RenderJSON(users)
 }
 
 func (u *User) GetUser(username string) revel.Result {
-	user := models.User{Username: username}
+	user := user_model.User{Username: username}
 	if app.DB.Where(&user).Find(&user).RecordNotFound() {
 		return revel.PlaintextErrorResult{Error: fmt.Errorf("unknown username")}
 	}
-	return u.RenderJSON(user)
+	return util.AppResponse{200, "Success" ,user}
 }
 
 func (u *User) UpdateUser(username string) revel.Result {
-	user := models.User{Username: username}
+	user := user_model.User{Username: username}
 	if app.DB.Where(&user).First(&user).RecordNotFound() {
 		return revel.PlaintextErrorResult{Error: fmt.Errorf("unknown username")}
 	}
@@ -47,58 +49,60 @@ func (u *User) UpdateUser(username string) revel.Result {
 	if user.Password != "" {
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 		if err != nil {
-			return RenderStatus{500, err.Error()}
+			return util.AppResponse{500, err.Error(), nil}
 		}
 		user.Password = string(hashedPassword)
 	}
 	app.AuthCounter[username] = app.AuthCounter[username] + 1
 	user.Counter = counter
-	app.DB.Model(&models.User{}).Updates(&user)
-	return u.RenderJSON(user)
+	app.DB.Model(&user_model.User{}).Updates(&user)
+	return util.AppResponse{200, "success" ,user}
 }
 
 func (u *User) DeleteUser(username string) revel.Result {
-	user := models.User{Username: username}
+	user := user_model.User{Username: username}
 	if app.DB.Where(&user).First(&user).RecordNotFound() {
-		return revel.PlaintextErrorResult{Error: fmt.Errorf("unknown username")}
+		return util.AppResponse{400, "unknown username" ,nil}
 	}
-	app.DB.Model(&models.User{}).Delete(&user)
+	app.DB.Model(&user_model.User{}).Delete(&user)
 	app.AuthCounter[username] = app.AuthCounter[username] + 1
-	return RenderStatus{200, ""}
+	return util.AppResponse{200, "" ,nil}
 }
 
 func (u *User) GetRoles(username string) revel.Result {
-	user := models.User{Username: username}
+	user := user_model.User{Username: username}
 	if app.DB.Where(&user).First(&user).RecordNotFound() {
-		return RenderStatus{400, "unknown username"}
+		return util.AppResponse{400, "unknown username" ,nil}
 	}
-	roles := new([]models.Role)
+	roles := new([]role_model.Role)
 	app.DB.Model(&user).Related(&roles, "Roles")
 	app.DB.Preload("Roles").First(&user)
-	return u.RenderJSON(roles)
+	return  util.AppResponse{200, "Success", roles}
 }
 
 func (u *User) SetRoles(username string) revel.Result {
-	user := models.User{Username: username}
+	user := user_model.User{Username: username}
 	if app.DB.Where(&user).First(&user).RecordNotFound() {
-		return RenderStatus{400, "user not found"}
+		return util.AppResponse{400, "user not found" ,nil}
 	}
-	roles := new([]models.Role)
+	roles := new([]role_model.Role)
 	u.Params.BindJSON(&roles)
 	app.DB.Model(&user).Association("Roles").Clear()
 	app.DB.Model(&user).Association("Roles").Append(roles)
 	app.DB.Model(&user).Related(&roles, "Roles")
-	return u.RenderJSON(roles)
+	return  util.AppResponse{200, "Success", roles}
 }
 
 func (u *User) AddRole(username string) revel.Result {
-	user := models.User{Username: username}
+	user := user_model.User{Username: username}
 	if app.DB.Where(&user).First(&user).RecordNotFound() {
-		return RenderStatus{400, "user not found"}
+		return util.AppResponse{400, "user not found", nil}
 	}
-	roles := new([]models.Role)
+	roles := new([]role_model.Role)
 	u.Params.BindJSON(&roles)
 	app.DB.Model(&user).Association("Roles").Append(roles)
 	app.DB.Model(&user).Related(&roles, "Roles")
-	return u.RenderJSON(roles)
-	}
+
+
+	return  util.AppResponse{200, "Success", roles}
+}

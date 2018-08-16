@@ -1,7 +1,8 @@
-package models
+package user_model
 
 import (
 	"github.com/jinzhu/gorm"
+	role_model "github.com/koki/conductor/app/src/roles/models"
 )
 
 type User struct {
@@ -12,7 +13,7 @@ type User struct {
 	Email    string
 	Counter  uint64 `json:"-"`
 
-	Roles []Role `gorm:"many2many:user_roles;"`
+	Roles []role_model.Role `gorm:"many2many:user_roles;"`
 }
 
 /*

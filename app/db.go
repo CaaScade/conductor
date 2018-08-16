@@ -3,7 +3,9 @@ package app
 import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	"github.com/koki/conductor/app/models"
+	global_model "github.com/koki/conductor/app/src/app/models"
+	user_model "github.com/koki/conductor/app/src/user/models"
+	role_model "github.com/koki/conductor/app/src/roles/models"
 	"github.com/qor/auth/auth_identity"
 	"github.com/revel/revel"
 	"golang.org/x/crypto/bcrypt"
@@ -19,24 +21,24 @@ func InitDB() {
 	}
 	DB = db
 
-	DB.AutoMigrate(&models.Global{})
+	DB.AutoMigrate(&global_model.Global{})
 	DB.AutoMigrate(&auth_identity.AuthIdentity{})
-	DB.AutoMigrate(&models.User{})
-	DB.AutoMigrate(&models.Role{})
-	DB.AutoMigrate(&models.Permission{})
+	DB.AutoMigrate(&user_model.User{})
+	DB.AutoMigrate(&role_model.Role{})
+	DB.AutoMigrate(&role_model.Permission{})
 
-	var globalConfig models.Global
+	var globalConfig global_model.Global
 	if revel.Config.BoolDefault(AUTHENTICATED_CONF, false) {
-		globalConfig.AuthenticationMode = int(models.AuthenticationModePassword)
+		globalConfig.AuthenticationMode = int(global_model.AuthenticationModePassword)
 		revel.Config.SetOption(AUTHENTICATED_CONF, "true")
 	} else {
-		globalConfig.AuthenticationMode = int(models.AuthenticationModeUnsafe)
+		globalConfig.AuthenticationMode = int(global_model.AuthenticationModeUnsafe)
 	}
 	if DB.Where(&globalConfig).First(&globalConfig).RecordNotFound() {
 		DB.Create(&globalConfig)
 	}
 
-	permission := models.Permission{
+	permission := role_model.Permission{
 		Name:     "all",
 		Resource: "*",
 		Create:   true,
@@ -45,11 +47,11 @@ func InitDB() {
 		Delete:   true,
 	}
 	DB.LogMode(true)
-	role := models.Role{
+	role := role_model.Role{
 		Name: "admin",
 	}
 
-	user := models.User{
+	user := user_model.User{
 		Username: "admin",
 		Password: "",
 		Counter:  1,
@@ -70,10 +72,10 @@ func InitDB() {
 		user.Password = string(hashedPassword)
 		DB.Create(&user)
 	}
-	DB.Model(&permission).Association("Roles").Append([]*models.Role{&role})
-	DB.Model(&role).Association("Permissions").Append([]*models.Permission{&permission})
-	DB.Model(&role).Association("Users").Append([]*models.User{&user})
-	//	DB.Model(&user).Association("Roles").Append([]*models.Role{&role})
+	DB.Model(&permission).Association("Roles").Append([]*role_model.Role{&role})
+	DB.Model(&role).Association("Permissions").Append([]*role_model.Permission{&permission})
+	DB.Model(&role).Association("Users").Append([]*user_model.User{&user})
+	//	DB.Model(&user).Association("Roles").Append([]*role_model.Role{&role})
 
 	AddExitEventHandler(dbShutdownHandler)
 }
