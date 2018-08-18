@@ -10,7 +10,7 @@
 GET     /                                       App.Index
 GET     /ui/login                               App.Login
 GET     /ui/*filepath                           S3.ServeUrlOrLocal
-GET     /ui                                     App.Index  
+GET     /ui                                     App.Index
 
 POST    /auth/register                          App.Index
 POST    /auth/login                             App.Index

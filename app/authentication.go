@@ -9,8 +9,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	user_model "github.com/koki/conductor/app/src/user/models"
-	role_model "github.com/koki/conductor/app/src/roles/models"
+	"github.com/koki/conductor/app/src/user/models"
 	"github.com/pquerna/otp/hotp"
 	"github.com/revel/revel"
 	"golang.org/x/crypto/bcrypt"
@@ -50,9 +49,9 @@ func AuthFilter(c *revel.Controller, fc []revel.Filter) {
 	}
 	redirect := c.Params.Query.Get("redirect")
 	if strings.TrimRight(c.Request.GetPath(), "/") == AUTH_LOGIN_PATH {
-		var user user_model.User
+		var user models.User
 		username := c.Params.Form.Get("username")
-		if DB.Where(&user_model.User{Username: username}).First(&user).RecordNotFound() {
+		if DB.Where(&models.User{Username: username}).First(&user).RecordNotFound() {
 			c.Response.SetStatus(http.StatusUnauthorized)
 			c.Response.GetWriter().Write([]byte("username or password incorrect"))
 			return
@@ -63,10 +62,10 @@ func AuthFilter(c *revel.Controller, fc []revel.Filter) {
 			c.Response.GetWriter().Write([]byte("username or password incorrect"))
 			return
 		}
-		roles := new([]role_model.Role)
-		perms := new([]role_model.Permission)
+		roles := new([]models.Role)
+		perms := new([]models.Permission)
 		DB.Model(&user).Related(roles, "Roles")
-		newPerms := new([]role_model.Permission)
+		newPerms := new([]models.Permission)
 		for _, r := range *roles {
 			DB.Model(&r).Related(newPerms, "Permissions")
 			*perms = append(*perms, *newPerms...)
@@ -110,9 +109,9 @@ func AuthFilter(c *revel.Controller, fc []revel.Filter) {
 	var username string
 	var otp string
 	if strings.TrimRight(c.Request.GetPath(), "/") == AUTH_REGISTER_PATH {
-		var user user_model.User
+		var user models.User
 		username := c.Params.Form.Get("username")
-		if !DB.Where(&user_model.User{Username: username}).First(&user).RecordNotFound() {
+		if !DB.Where(&models.User{Username: username}).First(&user).RecordNotFound() {
 			c.Response.SetStatus(http.StatusBadRequest)
 			c.Response.GetWriter().Write([]byte("username already exists"))
 			return
@@ -131,11 +130,11 @@ func AuthFilter(c *revel.Controller, fc []revel.Filter) {
 		user.Counter = 1
 		DB.Create(&user)
 
-		role := role_model.Role{
+		role := models.Role{
 			Name: "user",
 		}
-		DB.Model(&role).Association("Users").Append([]*user_model.User{&user})
-		DB.Model(&user).Association("Roles").Append([]*role_model.Role{&role})
+		DB.Model(&role).Association("Users").Append([]*models.User{&user})
+		DB.Model(&user).Association("Roles").Append([]*models.Role{&role})
 
 		c.Response.SetStatus(http.StatusOK)
 		if redirect != "" {
@@ -195,8 +194,8 @@ func AuthFilter(c *revel.Controller, fc []revel.Filter) {
 		encoder.Write([]byte(username))
 		defer encoder.Close()
 		if AuthCounter[username] == 0 {
-			var user user_model.User
-			if DB.Where(&user_model.User{Username: username}).First(&user).RecordNotFound() {
+			var user models.User
+			if DB.Where(&models.User{Username: username}).First(&user).RecordNotFound() {
 				c.Response.SetStatus(http.StatusUnauthorized)
 				c.Response.GetWriter().Write([]byte("Username is invalid"))
 			}
@@ -217,8 +216,8 @@ func AuthFilter(c *revel.Controller, fc []revel.Filter) {
 		return
 	}
 	if strings.TrimRight(c.Request.GetPath(), "/") == AUTH_LOGOUT_PATH {
-		var user user_model.User
-		if DB.Where(&user_model.User{Username: username}).First(&user).RecordNotFound() {
+		var user models.User
+		if DB.Where(&models.User{Username: username}).First(&user).RecordNotFound() {
 			c.Response.SetStatus(http.StatusBadRequest)
 			c.Response.GetWriter().Write([]byte("invalid username"))
 			return
