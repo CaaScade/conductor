@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/koki/conductor/app/src/user/models"
+	"github.com/koki/conductor/app/models"
 	"github.com/pquerna/otp/hotp"
 	"github.com/revel/revel"
 	"golang.org/x/crypto/bcrypt"

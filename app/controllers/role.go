@@ -1,12 +1,12 @@
-package role
+package controllers
 
 import (
 	"fmt"
 
 	"github.com/koki/conductor/app"
 	"github.com/revel/revel"
-	"github.com/koki/conductor/app/src/util"
-	"github.com/koki/conductor/app/src/user/models"
+	"github.com/koki/conductor/app/util"
+	"github.com/koki/conductor/app/models"
 )
 
 type Role struct {

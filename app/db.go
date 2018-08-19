@@ -3,8 +3,7 @@ package app
 import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	global_model "github.com/koki/conductor/app/src/app/models"
-	"github.com/koki/conductor/app/src/user/models"
+	"github.com/koki/conductor/app/models"
 	"github.com/qor/auth/auth_identity"
 	"github.com/revel/revel"
 	"golang.org/x/crypto/bcrypt"
@@ -20,18 +19,18 @@ func InitDB() {
 	}
 	DB = db
 
-	DB.AutoMigrate(&global_model.Global{})
+	DB.AutoMigrate(&models.Global{})
 	DB.AutoMigrate(&auth_identity.AuthIdentity{})
 	DB.AutoMigrate(&models.User{})
 	DB.AutoMigrate(&models.Role{})
 	DB.AutoMigrate(&models.Permission{})
 
-	var globalConfig global_model.Global
+	var globalConfig models.Global
 	if revel.Config.BoolDefault(AUTHENTICATED_CONF, false) {
-		globalConfig.AuthenticationMode = int(global_model.AuthenticationModePassword)
+		globalConfig.AuthenticationMode = int(models.AuthenticationModePassword)
 		revel.Config.SetOption(AUTHENTICATED_CONF, "true")
 	} else {
-		globalConfig.AuthenticationMode = int(global_model.AuthenticationModeUnsafe)
+		globalConfig.AuthenticationMode = int(models.AuthenticationModeUnsafe)
 	}
 	if DB.Where(&globalConfig).First(&globalConfig).RecordNotFound() {
 		DB.Create(&globalConfig)

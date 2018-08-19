@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/koki/conductor/app"
-	"github.com/koki/conductor/app/src/user/models"
+	"github.com/koki/conductor/app/models"
 	"github.com/revel/revel"
 	"golang.org/x/crypto/bcrypt"
-	"github.com/koki/conductor/app/src/util"
+	"github.com/koki/conductor/app/util"
 )
 
 type User struct {
