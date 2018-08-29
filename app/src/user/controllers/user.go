@@ -17,17 +17,22 @@ type RenderStatus struct {
 	Text   string
 }
 
+// revel response model
 func (r RenderStatus) Apply(req *revel.Request, resp *revel.Response) {
 	resp.SetStatus(r.Status)
 	resp.GetWriter().Write([]byte(r.Text))
 }
 
+// Get List of all roles
+// TODO: provide list only if the role is ADMIN; need to verify
 func (u *User) ListUsers() revel.Result {
+
+	// check for the role
 	users := []models.User{}
 	app.DB.Find(&users)
 	return util.AppResponse{200, "success", users}
 }
-
+// get details of perticular user
 func (u *User) GetUser(username string) revel.Result {
 	user := models.User{Username: username}
 	if app.DB.Where(&user).Find(&user).RecordNotFound() {
@@ -36,6 +41,7 @@ func (u *User) GetUser(username string) revel.Result {
 	return util.AppResponse{200, "Success", user}
 }
 
+// update particular user
 func (u *User) UpdateUser(username string) revel.Result {
 	user := models.User{Username: username}
 	if app.DB.Where(&user).First(&user).RecordNotFound() {
@@ -56,6 +62,7 @@ func (u *User) UpdateUser(username string) revel.Result {
 	return util.AppResponse{200, "success", user}
 }
 
+// delete particular user
 func (u *User) DeleteUser(username string) revel.Result {
 	user := models.User{Username: username}
 	if app.DB.Where(&user).First(&user).RecordNotFound() {
@@ -66,6 +73,7 @@ func (u *User) DeleteUser(username string) revel.Result {
 	return util.AppResponse{200, "", nil}
 }
 
+// get all roles of particular user
 func (u *User) GetRoles(username string) revel.Result {
 	user := models.User{Username: username}
 	if app.DB.Where(&user).First(&user).RecordNotFound() {
@@ -77,6 +85,7 @@ func (u *User) GetRoles(username string) revel.Result {
 	return util.AppResponse{200, "Success", roles}
 }
 
+// set new roles to particular user
 func (u *User) SetRoles(username string) revel.Result {
 	user := models.User{Username: username}
 	if app.DB.Where(&user).First(&user).RecordNotFound() {
@@ -89,7 +98,7 @@ func (u *User) SetRoles(username string) revel.Result {
 	app.DB.Model(&user).Related(&roles, "Roles")
 	return util.AppResponse{200, "Success", roles}
 }
-
+// add/append new roles to particular user
 func (u *User) AddRole(username string) revel.Result {
 	user := models.User{Username: username}
 	if app.DB.Where(&user).First(&user).RecordNotFound() {

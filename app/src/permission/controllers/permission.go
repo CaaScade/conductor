@@ -11,12 +11,16 @@ type Permission struct {
 	*revel.Controller
 }
 
+// Fetch list of all the permission we have in the system
+// TODO: provide list only if the permission is ADMIN; need to verify
 func (p *Permission) ListPermissions() revel.Result {
 	perms := []models.Permission{}
 	app.DB.Find(&perms)
 	return util.AppResponse{200, "success", perms}
 }
 
+// Create new permission
+// TODO: create only if the permission is ADMIN; need to verify
 func (p *Permission) CreatePermission() revel.Result {
 	permType := models.Permission{}
 	p.Params.BindJSON(&permType)
@@ -27,6 +31,8 @@ func (p *Permission) CreatePermission() revel.Result {
 	return util.AppResponse{200, "success", permType}
 }
 
+// Get details of particular permission
+// TODO: provide list only if the role is ADMIN; need to verify
 func (p *Permission) GetPermission(perm string) revel.Result {
 	permType := models.Permission{Name: perm}
 	if app.DB.Where(&permType).First(&permType).RecordNotFound() {
@@ -35,6 +41,8 @@ func (p *Permission) GetPermission(perm string) revel.Result {
 	return util.AppResponse{200, "success", permType}
 }
 
+// Update the details of particular permission
+// TODO: update only if the permission is ADMIN; need to verify
 func (p *Permission) UpdatePermission(perm string) revel.Result {
 	permType := models.Permission{Name: perm}
 	if app.DB.Where(&permType).First(&permType).RecordNotFound() {
@@ -45,6 +53,8 @@ func (p *Permission) UpdatePermission(perm string) revel.Result {
 	return util.AppResponse{200, "success", permType}
 }
 
+// Delete the particular permission
+// TODO: delete only if the permission is ADMIN; need to verify
 func (p *Permission) DeletePermission(perm string) revel.Result {
 	permType := models.Permission{Name: perm}
 	if app.DB.Where(&permType).First(&permType).RecordNotFound() {
@@ -54,6 +64,7 @@ func (p *Permission) DeletePermission(perm string) revel.Result {
 	return util.AppResponse{200, "success", permType}
 }
 
+// Get all roles belongs to the particular permission
 func (p *Permission) GetRoles(perm string) revel.Result {
 	permType := models.Permission{Name: perm}
 	if app.DB.Where(&permType).First(&permType).RecordNotFound() {
@@ -64,6 +75,7 @@ func (p *Permission) GetRoles(perm string) revel.Result {
 	return util.AppResponse{200, "success", roles}
 }
 
+// Set new roles to the particular permission
 func (p *Permission) SetRoles(perm string) revel.Result {
 	permType := models.Permission{}
 	if app.DB.Where("name = ?", perm).First(&permType).RecordNotFound() {
@@ -77,6 +89,7 @@ func (p *Permission) SetRoles(perm string) revel.Result {
 	return util.AppResponse{200, "success", roles}
 }
 
+// Add/append new role(s) to the particular permission
 func (p *Permission) AddRoles(perm string) revel.Result {
 	permType := models.Permission{}
 	if app.DB.Where("name = ?", perm).First(&permType).RecordNotFound() {

@@ -12,6 +12,8 @@ import (
 
 var DB *gorm.DB
 
+// init db
+// also create some initial roles and users with it
 func InitDB() {
 	localPath := revel.Config.StringDefault("koki.db.location", "/tmp/koki.db")
 	db, err := gorm.Open("sqlite3", localPath)
@@ -102,6 +104,7 @@ func InitDB() {
 	AddExitEventHandler(dbShutdownHandler)
 }
 
+// close the db connections
 func dbShutdownHandler() {
 	revel.AppLog.Infof("closing database connection")
 	DB.Close()

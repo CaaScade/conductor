@@ -37,6 +37,8 @@ func init() {
 	AuthCounter = map[string]uint64{}
 }
 
+// Authfilter will authenticate based on the perticular route
+// it will return token on successful operation
 func AuthFilter(c *revel.Controller, fc []revel.Filter) {
 	if !revel.Config.BoolDefault(AUTHENTICATED_CONF, false) {
 		fc[0](c, fc[1:])

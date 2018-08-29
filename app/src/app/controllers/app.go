@@ -11,6 +11,7 @@ import (
 
 type MyHtml string
 
+// Apply create response for each request
 func (r MyHtml) Apply(req *revel.Request, resp *revel.Response) {
 	resp.WriteHeader(http.StatusOK, "text/html")
 	resp.GetWriter().Write([]byte(r))
@@ -20,6 +21,9 @@ type App struct {
 	static.Static
 }
 
+// Login will load the UI for the user from the given path
+// if localpath is provided then it will load from it
+// else the ui will rendered from the AWS-S3 bucket
 func (c App) Login() revel.Result {
 	localPath := revel.Config.BoolDefault("koki.ui.local", false)
 	if localPath {
@@ -46,6 +50,9 @@ func (c App) Login() revel.Result {
 	return MyHtml(body)
 }
 
+// Index will load the UI for the user from the given path
+// if localpath is provided then it will load from it
+// else the ui will rendered from the AWS-S3 bucket
 func (c App) Index() revel.Result {
 	localPath := revel.Config.BoolDefault("koki.ui.local", false)
 	if localPath {

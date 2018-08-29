@@ -9,6 +9,9 @@ import (
 	"github.com/revel/revel"
 )
 
+
+// filter each incoming request to the server
+// also bypass some of the url/resource without auth token
 func AuthorizationFilter(c *revel.Controller, fc []revel.Filter) {
 	if !revel.Config.BoolDefault(AUTHENTICATED_CONF, false) {
 		fc[0](c, fc[1:])
