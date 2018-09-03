@@ -4,8 +4,9 @@ import (
 	"fmt"
 
 	"github.com/koki/conductor/app"
-	"github.com/koki/conductor/app/models"
 	"github.com/revel/revel"
+	"github.com/koki/conductor/app/util"
+	"github.com/koki/conductor/app/models"
 )
 
 type Role struct {
@@ -52,7 +53,7 @@ func (r *Role) DeleteRole(role string) revel.Result {
 		return revel.PlaintextErrorResult{Error: fmt.Errorf("unknown role")}
 	}
 	app.DB.Model(&models.Role{}).Delete(&roleType)
-	return RenderStatus{200, ""}
+	return util.AppResponse{200, "", nil}
 }
 
 func (r *Role) GetUsers(role string) revel.Result {

@@ -6,6 +6,7 @@ import (
 	"github.com/koki/conductor/app"
 	"github.com/koki/conductor/app/models"
 	"github.com/revel/revel"
+	"github.com/koki/conductor/app/util"
 )
 
 type Permission struct {
@@ -52,7 +53,7 @@ func (p *Permission) DeletePermission(perm string) revel.Result {
 		return revel.PlaintextErrorResult{Error: fmt.Errorf("unknown perm")}
 	}
 	app.DB.Model(&models.Permission{}).Delete(&permType)
-	return RenderStatus{200, ""}
+	return util.AppResponse{200, "" , nil}
 }
 
 func (p *Permission) GetRoles(perm string) revel.Result {
