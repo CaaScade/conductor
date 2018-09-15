@@ -46,6 +46,19 @@ GET     /api/v1/permission/:perm/roles          Permission.GetRoles
 POST    /api/v1/permission/:perm/roles          Permission.SetRoles
 PUT     /api/v1/permission/:perm/roles          Permission.AddRoles
 
+GET     /api/v1/slack/:username/alert           Alerts.GetAlertData
+POST    /api/v1/slack/:username/alert           Alerts.AddSlackAlert
+PUT     /api/v1/slack/:username/alert           Alerts.UpdateSlackAlert
+
+GET     /api/v1/dashboard/:username/:application        Dashboard.GetDashboard
+POST    /api/v1/dashboard/:username/:application        Dashboard.CreateDashboard
+PUT     /api/v1/dashboard/:username/:application        Dashboard.UpdateDashboard
+
+GET     /api/v1/dashboard/datasource/:dashboard         Dashboard.GetDataSource
+POST    /api/v1/dashboard/datasource/:dashboard         Dashboard.CreateDataSource
+PUT     /api/v1/dashboard/datasource/:dashboard         Dashboard.UpdateDataSource
+
+
 GET     /*filepath                              S3.ServeUrlOrLocal
 
 # Ignore favicon requests

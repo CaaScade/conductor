@@ -2,18 +2,22 @@ package app
 
 import (
 	"context"
+	"github.com/revel/revel"
 	"os"
 	"os/signal"
-
-	"github.com/revel/revel"
+	"sync"
 )
 
 type ExitHandler func()
 
 var handlers []ExitHandler
+var lock sync.Mutex
 
 func AddExitEventHandler(handler ExitHandler) {
+	lock.Lock()
+	defer lock.Unlock()
 	handlers = append(handlers, handler)
+
 }
 
 func init() {

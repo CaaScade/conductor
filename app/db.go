@@ -3,7 +3,8 @@ package app
 import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	"github.com/koki/conductor/app/models"
+	global_model "github.com/koki/conductor/app/src/app/models"
+	"github.com/koki/conductor/app/src/user/models"
 	"github.com/qor/auth/auth_identity"
 	"github.com/revel/revel"
 	"golang.org/x/crypto/bcrypt"
@@ -11,6 +12,8 @@ import (
 
 var DB *gorm.DB
 
+// init db
+// also create some initial roles and users with it
 func InitDB() {
 	localPath := revel.Config.StringDefault("koki.db.location", "/tmp/koki.db")
 	db, err := gorm.Open("sqlite3", localPath)
@@ -19,18 +22,21 @@ func InitDB() {
 	}
 	DB = db
 
-	DB.AutoMigrate(&models.Global{})
+	DB.AutoMigrate(&global_model.Global{})
 	DB.AutoMigrate(&auth_identity.AuthIdentity{})
 	DB.AutoMigrate(&models.User{})
 	DB.AutoMigrate(&models.Role{})
 	DB.AutoMigrate(&models.Permission{})
+	DB.AutoMigrate(&models.Alerts{})
+	DB.AutoMigrate(&models.Dashboard{})
+	DB.AutoMigrate(&models.DashboardDatasource{})
 
-	var globalConfig models.Global
+	var globalConfig global_model.Global
 	if revel.Config.BoolDefault(AUTHENTICATED_CONF, false) {
-		globalConfig.AuthenticationMode = int(models.AuthenticationModePassword)
+		globalConfig.AuthenticationMode = int(global_model.AuthenticationModePassword)
 		revel.Config.SetOption(AUTHENTICATED_CONF, "true")
 	} else {
-		globalConfig.AuthenticationMode = int(models.AuthenticationModeUnsafe)
+		globalConfig.AuthenticationMode = int(global_model.AuthenticationModeUnsafe)
 	}
 	if DB.Where(&globalConfig).First(&globalConfig).RecordNotFound() {
 		DB.Create(&globalConfig)
@@ -63,6 +69,8 @@ func InitDB() {
 		Password: "",
 		Counter:  1,
 	}
+
+	alerts := models.Alerts{}
 	if DB.Where(&permission).First(&permission).RecordNotFound() {
 		DB.Create(&permission)
 	}
@@ -96,11 +104,12 @@ func InitDB() {
 	DB.Model(&svcRole).Association("Permissions").Append([]*models.Permission{&permission})
 	DB.Model(&role).Association("Users").Append([]*models.User{&user})
 	DB.Model(&svcRole).Association("Users").Append([]*models.User{&svcUser})
-	//	DB.Model(&user).Association("Roles").Append([]*models.Role{&role})
+	DB.Model(&alerts).Association("Users").Append([]*models.User{&user})
 
 	AddExitEventHandler(dbShutdownHandler)
 }
 
+// close the db connections
 func dbShutdownHandler() {
 	revel.AppLog.Infof("closing database connection")
 	DB.Close()

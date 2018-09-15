@@ -11,6 +11,7 @@ type S3 struct {
 	static.Static
 }
 
+// Serve the resource of the UI from local or AWS-S3 based on user's selection
 func (s S3) ServeUrlOrLocal(filepath string) revel.Result {
 	if filepath == "" {
 		filepath = "index.html"

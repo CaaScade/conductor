@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/koki/conductor/app/models"
+	"github.com/koki/conductor/app/src/user/models"
 	"github.com/pquerna/otp/hotp"
 	"github.com/revel/revel"
 	"golang.org/x/crypto/bcrypt"
@@ -37,6 +37,8 @@ func init() {
 	AuthCounter = map[string]uint64{}
 }
 
+// Authfilter will authenticate based on the perticular route
+// it will return token on successful operation
 func AuthFilter(c *revel.Controller, fc []revel.Filter) {
 	if !revel.Config.BoolDefault(AUTHENTICATED_CONF, false) {
 		fc[0](c, fc[1:])
