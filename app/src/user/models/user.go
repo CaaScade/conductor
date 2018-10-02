@@ -29,4 +29,6 @@ type User struct {
 	Alerts []Alerts `gorm:"many2many:alert_user;"`
 
 	Dashboards []Dashboard `gorm:"many2many:dashboard_user;"`
+
+	Applications []Application `gorm:"many2many:user_apps;"`
 }

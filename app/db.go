@@ -30,6 +30,7 @@ func InitDB() {
 	DB.AutoMigrate(&models.Alerts{})
 	DB.AutoMigrate(&models.Dashboard{})
 	DB.AutoMigrate(&models.DashboardDatasource{})
+	DB.AutoMigrate(&models.Application{})
 
 	var globalConfig global_model.Global
 	if revel.Config.BoolDefault(AUTHENTICATED_CONF, false) {

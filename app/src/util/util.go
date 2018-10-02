@@ -27,7 +27,7 @@ type AppResponse struct {
 // generate generic response model for the each request
 // its return response ready JSON
 func (ar AppResponse) Apply(req *revel.Request, resp *revel.Response) {
-	dataResponse, err := json.Marshal(ar)
+	dataResponse, err := json.MarshalIndent(ar, "", " ")
 	status := ar.Code
 
 	if err != nil {
@@ -37,4 +37,28 @@ func (ar AppResponse) Apply(req *revel.Request, resp *revel.Response) {
 
 	resp.SetStatus(status)
 	resp.GetWriter().Write(dataResponse)
+}
+
+func (ar AppResponse) Byte() (int, []byte) {
+	dataResponse, err := json.MarshalIndent(ar, "", " ")
+	status := ar.Code
+
+	if err != nil {
+		status = 500
+	}
+
+	return status, dataResponse
+}
+
+func (ar AppResponse) ApplyFilter(resp *revel.Response) (int, []byte) {
+	dataResponse, err := json.MarshalIndent(ar, "", " ")
+	status := ar.Code
+
+	if err != nil {
+		resp.SetStatus(500)
+		status = 500
+	}
+	resp.SetStatus(status)
+	resp.GetWriter().Write(dataResponse)
+	return status, dataResponse
 }

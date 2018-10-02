@@ -58,6 +58,13 @@ GET     /api/v1/dashboard/datasource/:dashboard         Dashboard.GetDataSource
 POST    /api/v1/dashboard/datasource/:dashboard         Dashboard.CreateDataSource
 PUT     /api/v1/dashboard/datasource/:dashboard         Dashboard.UpdateDataSource
 
+GET     /api/v1/applications                  Application.GetApplicationList
+POST    /api/v1/applications                  Application.CreateApplication
+GET     /api/v1/application/:username         Application.GetApplication
+POST    /api/v1/application/:username         Application.LaunchApplication
+PUT     /api/v1/application/:username         Application.UpdateApplication
+DELETE  /api/v1/application/:username         Application.DeleteApplication
+
 
 GET     /*filepath                              S3.ServeUrlOrLocal
 

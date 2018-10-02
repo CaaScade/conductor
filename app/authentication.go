@@ -4,6 +4,7 @@ import (
 	"crypto/rsa"
 	"encoding/base32"
 	"fmt"
+	"github.com/koki/conductor/app/src/util"
 	"net/http"
 	"strings"
 	"time"
@@ -54,8 +55,8 @@ func AuthFilter(c *revel.Controller, fc []revel.Filter) {
 		var user models.User
 		username := c.Params.Form.Get("username")
 		if DB.Where(&models.User{Username: username}).First(&user).RecordNotFound() {
-			c.Response.SetStatus(http.StatusUnauthorized)
-			c.Response.GetWriter().Write([]byte("username or password incorrect"))
+			ar := util.AppResponse{http.StatusUnauthorized, "username or password incorrect", nil}
+			ar.ApplyFilter(c.Response)
 			return
 		}
 		password := c.Params.Form.Get("password")
