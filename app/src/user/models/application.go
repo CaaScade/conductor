@@ -20,7 +20,19 @@ type Application struct {
 	ArchitectureURL         string
 	AdditionalReferencesURL string
 	Discount                float32
+	IsConfig				bool
+	IsReadOnly				bool
+
+	ConfigData				[]ApplicationConfig `gorm:"many2many:apps_config;"`
 
 	// List of the Users belongs to particular application
 	Users []User `gorm:"many2many:user_apps;"`
+}
+
+type ApplicationConfig struct {
+	gorm.Model
+
+	Name	string
+	Type	string
+	Value	string
 }

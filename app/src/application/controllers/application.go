@@ -12,6 +12,7 @@ import (
 	appsv1 "k8s.io/api/apps/v1beta1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"strings"
 )
 
 type Application struct {
@@ -58,12 +59,13 @@ func (d *Application) LaunchApplication(username string) revel.Result {
 	application := new(models.Application)
 	d.Params.BindJSON(&application)
 
-	if application.PodName == "redis-stack" {
+
+	if application.PodName == "redis" {
 		err = d.LaunchRedisStack(username)
 	} else if application.PodName == "minio" {
-		err = d.DeployApplicationStack(username, application.PodName)
+		err = d.DeployApplicationStack("neel", application.PodName, application.ConfigData)
 	} else if application.PodName == "zk" {
-		err = d.DeployApplicationStack(username, application.PodName)
+		err = d.DeployApplicationStack("neel", application.PodName, application.ConfigData)
 	} else {
 		return util.AppResponse{400, "Sorry application installation not found", nil}
 	}
@@ -75,6 +77,9 @@ func (d *Application) LaunchApplication(username string) revel.Result {
 
 	app.DB.Model(&application).Association("Users").Append(&user)
 	app.DB.Model(&application).Related(&user, "Users")
+
+	app.DB.Model(&application).Association("ConfigData").Append(&application)
+	app.DB.Model(&application).Related(&application, "ConfigData")
 
 	return util.AppResponse{200, "Success", application}
 }
@@ -133,13 +138,22 @@ func (d *Application) LaunchRedisStack(username string) error {
 
 }
 
-func (d *Application) DeployApplicationStack(username string, applicationName string) error {
+func (d *Application) DeployApplicationStack(username string, applicationName string, config []models.ApplicationConfig ) error {
 	replicaCount := int32(3)
 	uniqueID := xid.New()
 
+	config_Args := []string{}
+
+	for _,element := range config {
+		if element.Type == "text" ||  element.Type == "password" {
+			config_Args = append(config_Args, fmt.Sprintf("--%s %s", element.Name, element.Value))
+		}
+	}
+	revel.AppLog.Debugf("the config args are %+v", strings.Join(config_Args," "))
+
 	var args []string
 	if applicationName == "zk" {
-		args = []string{"-e", "http://18.217.71.51:2379", "--id", fmt.Sprintf("/test/%s/%s/", uniqueID.String(), applicationName)}
+		args = []string{"-e", "http://18.217.71.51:2379", "--id", fmt.Sprintf("/test/%s/%s/", uniqueID.String(), applicationName, "-adminusername","[data from config]")}
 	} else if applicationName == "minio" {
 		args = []string{"-s", "http://18.217.71.51:2379", "--id", fmt.Sprintf("/test/%s/%s/", uniqueID.String(), applicationName)}
 	} else {
@@ -148,11 +162,11 @@ func (d *Application) DeployApplicationStack(username string, applicationName st
 
 	pod := appsv1.Deployment{
 		TypeMeta: metav1.TypeMeta{
-			APIVersion: "v1beta1",
-			Kind:       "Pod",
+			APIVersion: "apps/v1beta1",
+			Kind:       "Deployment",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      fmt.Sprintf("zookeeper-%s", uniqueID.String()),
+			Name:      fmt.Sprintf("%s-%s",applicationName, uniqueID.String()),
 			Namespace: username,
 		},
 		Spec: appsv1.DeploymentSpec{
@@ -203,10 +217,43 @@ func (d *Application) DeployApplicationStack(username string, applicationName st
 			},
 		},
 	}
-	_, err := app.Client.AppsV1beta1().Deployments(username).Create(&pod)
+	pod_launch, err := app.Client.AppsV1beta1().Deployments(username).Create(&pod)
+
+	revel.AppLog.Debugf("Pod Launched %+v", pod_launch	)
+
+
 	if err != nil {
 		return err
 	}
 	return nil
+
+}
+
+func (d *Application) LaunchConductor() revel.Result{
+	pod := corev1.Pod{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "v1",
+			Kind:       "Pod",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "conductor",
+			Namespace: "neel",
+		},
+		Spec: corev1.PodSpec{
+			//NodeName: "ip-172-20-59-132.ec2.internal",
+			Containers: []corev1.Container{
+				{
+					Name:  "conductor",
+					Image: "wlan0/conductor",
+				},
+			},
+		},
+	}
+	pod_data, err := app.Client.CoreV1().Pods("neel").Create(&pod)
+	if err != nil {
+		return util.AppResponse{200, "failed", err}
+
+	}
+	return util.AppResponse{200, "Success", pod_data}
 
 }

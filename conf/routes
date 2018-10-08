@@ -66,6 +66,9 @@ PUT     /api/v1/application/:username         Application.UpdateApplication
 DELETE  /api/v1/application/:username         Application.DeleteApplication
 
 
+GET  /api/v1/launchconductor        Application.LaunchConductor
+
+
 GET     /*filepath                              S3.ServeUrlOrLocal
 
 # Ignore favicon requests
