@@ -1,6 +1,9 @@
 package app
 
 import (
+	"os/user"
+	"strings"
+
 	"github.com/revel/revel"
 
 	"k8s.io/client-go/kubernetes"
@@ -14,7 +17,11 @@ func init() {
 	revel.OnAppStart(func() {
 		var cfg *rest.Config
 		var err error
-		kubeConfig := revel.Config.StringDefault("kube.config.path", "")
+		usr, err := user.Current()
+		if err != nil {
+			revel.AppLog.Fatalf("Error getting current user %v", err)
+		}
+		kubeConfig := strings.Replace(revel.Config.StringDefault("kube.config.path", ""), "~", usr.HomeDir, -1)
 		if kubeConfig != "" {
 			cfg, err = clientcmd.BuildConfigFromFlags("", kubeConfig)
 		} else {
