@@ -24,11 +24,12 @@ func init() {
 		kubeConfig := strings.Replace(revel.Config.StringDefault("kube.config.path", ""), "~", usr.HomeDir, -1)
 		if kubeConfig != "" {
 			cfg, err = clientcmd.BuildConfigFromFlags("", kubeConfig)
-		} else {
-			cfg, err = rest.InClusterConfig()
-		}
-		if err != nil {
-			revel.AppLog.Fatalf("Error building kubernetes config %v", err)
+			if err != nil {
+				cfg, err = rest.InClusterConfig()
+				if err != nil {
+					revel.AppLog.Fatalf("could not find kubernetes config")
+				}
+			}
 		}
 
 		client, err := kubernetes.NewForConfig(cfg)
