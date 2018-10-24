@@ -4,3 +4,5 @@ routes/
 dist/
 .idea/
 data
+old
+bin

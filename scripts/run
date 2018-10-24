@@ -1,9 +1,0 @@
-#!/bin/bash
-
-project_path=(dirname $0)/..
-
-export KUBE_CONFIG_PATH="/home/wlan0/.kube/config"
-export KOKI_APP_AUTHENTICATED=false
-
-cd $project_path
-revel run github.com/koki/conductor

@@ -1,0 +1,50 @@
+module conductor
+
+require (
+	github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973
+	github.com/boombuler/barcode v1.0.0
+	github.com/davecgh/go-spew v1.1.0
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/ghodss/yaml v1.0.0
+	github.com/gogo/protobuf v1.1.1
+	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
+	github.com/golang/protobuf v1.1.0
+	github.com/google/gofuzz v0.0.0-20170612174753-24818f796faf
+	github.com/hashicorp/golang-lru v0.0.0-20180201235237-0fb14efe8c47
+	github.com/imdario/mergo v0.3.6
+	github.com/inconshreveable/log15 v0.0.0-20171019012758-0decfc6c20d9
+	github.com/jinzhu/gorm v0.0.0-20180726234349-409121d9e394
+	github.com/jinzhu/inflection v0.0.0-20180308033659-04140366298a
+	github.com/json-iterator/go v1.1.5
+	github.com/mattn/go-colorable v0.0.9
+	github.com/mattn/go-isatty v0.0.3
+	github.com/mattn/go-sqlite3 v1.9.0
+	github.com/matttproud/golang_protobuf_extensions v1.0.1
+	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd
+	github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742
+	github.com/pquerna/otp v1.0.0
+	github.com/prometheus/client_golang v0.8.0
+	github.com/prometheus/client_model v0.0.0-20180712105110-5c3871d89910
+	github.com/prometheus/common v0.0.0-20180801064454-c7de2306084e
+	github.com/prometheus/procfs v0.0.0-20180725123919-05ee40e3a273
+	github.com/qor/auth v0.0.0-20180620080635-2bfb79d96185
+	github.com/revel/config v0.19.0
+	github.com/revel/log15 v2.11.20+incompatible
+	github.com/revel/modules v0.19.0
+	github.com/revel/pathtree v0.0.0-20140121041023-41257a1839e9
+	github.com/revel/revel v0.0.0-20180712194327-037767bcb74d
+	github.com/spf13/pflag v1.0.2
+	github.com/xeonx/timeago v1.0.0-rc3
+	golang.org/x/crypto v0.0.0-20180808211826-de0752318171
+	golang.org/x/net v0.0.0-20180808004115-f9ce57c11b24
+	golang.org/x/sys v0.0.0-20180808154034-904bdc257025
+	golang.org/x/text v0.3.0
+	golang.org/x/time v0.0.0-20180412165947-fbb02b2291d2
+	gopkg.in/fsnotify/fsnotify.v1 v1.4.7
+	gopkg.in/inf.v0 v0.9.1
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0-20170531160350-a96e63847dc3
+	gopkg.in/stack.v0 v0.0.0-20141108040640-9b43fcefddd0
+	gopkg.in/yaml.v2 v2.2.1
+	k8s.io/apimachinery v0.0.0-20180810004531-720795f37ef0
+	k8s.io/client-go v8.0.0+incompatible
+)

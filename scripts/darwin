@@ -1,9 +1,0 @@
-#!/bin/bash
-
-set -x
-
-export GOOS=darwin
-
-go install github.com/revel/cmd
-
-revel run github.com/koki/conductor
