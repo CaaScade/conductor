@@ -3,6 +3,7 @@ package v1alpha1
 import (
 	"errors"
 
+	"conductor/pkg/client"
 	"conductor/pkg/resource"
 
 	log "github.com/sirupsen/logrus"
@@ -33,15 +34,15 @@ func (u *UserCodec) List(r *resource.ListOptions) ([]interface{}, error) {
 	return nil, nil
 }
 
-func (u *UserCodec) Update(old resource.Resource, new resource.Resource) (resource.Resource, error) {
+func (u *UserCodec) Update(old interface{}, new interface{}) (interface{}, error) {
 	return nil, nil
 }
 
-func (u *UserCodec) Delete(r resource.Resource) (resource.Resource, error) {
+func (u *UserCodec) Delete(r interface{}) (interface{}, error) {
 	return nil, nil
 }
 
-func (u *UserCodec) Get(name string, options *resource.GetOptions) (resource.Resource, error) {
+func (u *UserCodec) Get(name string, options *resource.GetOptions) (interface{}, error) {
 	return nil, nil
 }
 
@@ -51,8 +52,11 @@ type User struct {
 }
 
 func (u *User) Create(user *User) (*User, error) {
-	//client.Create(USER, user.Username, user)
-	return nil, nil
+	userInt, err := client.Create(USER, user.Username, user)
+	if err != nil {
+		return nil, err
+	}
+	return userInt.(*User), nil
 }
 
 func (u *User) Get(name string, options *resource.GetOptions) (*User, error) {

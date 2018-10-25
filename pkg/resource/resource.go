@@ -1,10 +1,10 @@
 package resource
 
 func init() {
-	ResourcesMap = map[string]interface{}{}
+	ResourcesMap = map[string]Resource{}
 }
 
-var ResourcesMap map[string]interface{}
+var ResourcesMap map[string]Resource
 
 type Resource interface {
 	Create(interface{}) (interface{}, error)

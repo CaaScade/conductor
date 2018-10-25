@@ -5,6 +5,7 @@ import (
 
 	//initialized api types
 	_ "conductor/pkg/api/v1alpha1"
+	_ "conductor/pkg/store"
 
 	"github.com/golang/glog"
 )
