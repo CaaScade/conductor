@@ -14,7 +14,10 @@ func init() {
 
 func Init() {
 	cfg := embed.NewConfig()
-	cfg.Dir = "default.etcd"
+	cfg.Dir = "/tmp/etcd"
+	cfg.LogOutput = "etcd.log"
+	//cfg.LogPkgLevels = "*=E"
+
 	e, err := embed.StartEtcd(cfg)
 	if err != nil {
 		log.Fatal(err)

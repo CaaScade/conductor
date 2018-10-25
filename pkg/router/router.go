@@ -14,6 +14,10 @@ import (
 type Router struct{}
 
 func (rr *Router) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+	rr.HandleResources(rw, r)
+}
+
+func (rr *Router) HandleResources(rw http.ResponseWriter, r *http.Request) {
 	log.WithFields(log.Fields{
 		"remote": r.RemoteAddr,
 		"path":   r.URL.Path,
