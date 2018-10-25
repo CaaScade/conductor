@@ -10,5 +10,9 @@ import (
 type Router struct{}
 
 func (rr *Router) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
-	log.Infof("[%s] %s", r.RemoteAddr, r.URL.Path)
+	log.WithFields(log.Fields{
+		"remote": r.RemoteAddr,
+		"path":   r.URL.Path,
+		"method": r.Method,
+	}).Infof("new request")
 }
