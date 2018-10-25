@@ -3,6 +3,9 @@ package main
 import (
 	"conductor/cmd"
 
+	//initialized api types
+	_ "conductor/pkg/api/v1alpha1"
+
 	"github.com/golang/glog"
 )
 
