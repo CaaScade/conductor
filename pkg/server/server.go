@@ -1,14 +1,13 @@
 package server
 
 import (
+	"conductor/pkg/router"
 	"fmt"
-	"net/http"
 	"time"
 
 	"conductor/pkg/config"
-	"conductor/pkg/router"
-
 	log "github.com/sirupsen/logrus"
+	"net/http"
 )
 
 func Run() error {
@@ -21,5 +20,6 @@ func Run() error {
 		WriteTimeout: 15 * time.Second,
 	}
 	log.Infof("listening on %s:%d", cfg.Addr, cfg.Port)
+
 	return s.ListenAndServe()
 }

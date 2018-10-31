@@ -5,7 +5,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"conductor/internal/etcd/embed"
+	"go.etcd.io/etcd/embed"
 )
 
 func init() {
