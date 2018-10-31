@@ -8,7 +8,6 @@ import (
 	"conductor/pkg/config"
 	log "github.com/sirupsen/logrus"
 	"net/http"
-	"../router/router.go"
 )
 
 func Run() error {

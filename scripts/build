@@ -2,4 +2,4 @@
 
 cd $(dirname $0)/..
 
-go build  -ldflags "-X github.com/koki/conductor/router.ENV="prod"" -o bin/conductor
+go build -o bin/conductor

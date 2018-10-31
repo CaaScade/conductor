@@ -12,6 +12,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 )
+
 var store = sessions.NewCookieStore(securecookie.GenerateRandomKey(32))
 
 var ENV = "dev"
@@ -104,7 +105,6 @@ func (rr *Router) HandleResources(rw http.ResponseWriter, r *http.Request) {
 			// Save it before we write to the response/return from the handler.
 			session.Save(r, rw)
 			if ENV == "dev" {
-				log.Info("this is dev build")
 				rw.Header().Add("X-Frame-Options", "SAMEORIGIN")
 				rw.Header().Add("X-XSS-Protection", "1; mode=block")
 				rw.Header().Add("X-Content-Type-Options", "nosniff")

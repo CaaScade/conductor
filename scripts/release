@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -e
+
+cd $(dirname $0)/..
+
+#create output dir if none exists
+mkdir -p bin
+
+GOOS=linux GOARCH=amd64 go build -ldflags "-X conductor/pkg/router.ENV=prod" -o bin/conductor
+mv bin/conductor bin/conductor_linux_amd64
+
+GOOS=linux GOARCH=386 go build -ldflags "-X conductor/pkg/router.ENV=prod" -o bin/conductor
+mv bin/conductor bin/conductor_linux_386
+
+GOOS=darwin GOARCH=amd64 go build -ldflags "-X conductor/pkg/router.ENV=prod" -o bin/conductor
+mv bin/conductor bin/conductor_darwin_amd64
+
+GOOS=darwin GOARCH=386 go build -ldflags "-X conductor/pkg/router.ENV=prod" -o bin/conductor
+mv bin/conductor bin/conductor_darwin_386
